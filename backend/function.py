@@ -34,6 +34,23 @@ class Submission(Base):
 Base.metadata.create_all(engine)
 
 
-
+def get_all_assigments(course:str):
+    session = Session(engine)
+    asssigments = session.query( Assigment).all()
+    response = []
+    for assigment in asssigments:
+        temp_event= {
+            "id": assigment.id,
+            "course" :assigment. course,
+            "title": assigment.title,
+            "max_marks":assigment.  max_marks,
+            " due_at": assigment. due_at,
+            "late_until":assigment.late_until,
+            "created_on":assigment.  created_on
+        }
+        response.append(temp_event)
+        
+    session.close()
+    return response
 
    
