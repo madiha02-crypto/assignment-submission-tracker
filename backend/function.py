@@ -105,21 +105,22 @@ def add_new_assigments(course:str ,title: str, max_marks:int, due_at:datetime,la
     session.close()
     return response
 
-def update_assigments_deadline(assignments_id: int,new_due_at: datetime,new_late_until: datetime):
-     session = Session(engine)
-     assignments = session.get(assignments, assignments_id)
-    
-response = {
-        "id": assigments.id,
-        "due_at": assigments.due_at,
-        "late_until": assigments.late_until
-    }
+def update_assigments_deadline(assignments_id: int, new_due_at: datetime, new_late_until: datetime):
+    with Session(engine) as session:
+        assignment = session.get(Assignment, assignments_id)
+        if assignment is None:
+            return None
 
+        assignment.due_at = new_due_at
+        assignment.late_until = new_late_until
+        session.commit()
+        session.refresh(assignment)
 
-Session.close()
-
-     
-
+        return {
+            "id": assignment.id,
+            "due_at": assignment.due_at,
+            "late_until": assignment.late_until,
+        }
 
 def delete_assigments(assigments_id):
  session = Session(engine)  
