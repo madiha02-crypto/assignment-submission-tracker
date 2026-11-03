@@ -5,7 +5,7 @@
 
 | Team | Partner 1 | Partner 2 | Partner 3 |Project | Branch |
 |---|---|---|---|---|
-| 13   |   sanika | shahibha | madiha | [Campus Event Registration](https://github.com/nithyasatish28/js-mini-project/blob/main/22-campus-event-registration.md) | `team-22-events` |
+| 13   |   sanika | shahibha | madiha | [Campus Event Registration](https://github.com/nithyasatish28/js-mini-project/blob/main/22-campus-event-registration.md) | `team-13-assignment-submission-tracker` |
 
 **Every 3 hours:** update this file, then commit and push it with the message `Check-in Day 1 12:00` (your day and time). Your instructor reads this page on GitHub.
 
