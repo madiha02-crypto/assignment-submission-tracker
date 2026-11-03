@@ -5,7 +5,7 @@ Assignement - submiision-Tracker
 
  Partner 1 | Partner 2 | Partner 3 |Project | Branch |
 |---|---|---|---|---|
-   sanika | shahibha | madiha | [Campus Event Registration](https://github.com/nithyasatish28/js-mini-project/blob/main/22-campus-event-registration.md) | `team-13-assignment-submission-tracker` |
+   sanika | shahibha | madiha | [assignment-submission-tracker](https://github.com/nithyasatish28/js-mini-project/blob/main/22-campus-event-registration.md) | `team-13-assignment-submission-tracker` |
 
 
 ## 1. Who is doing what
@@ -30,7 +30,7 @@ Fill in the method and path from your PRD's endpoint table. Status: ✅ done · 
 | E4 |patch
 | E5 |delete
 | E6 |post
-| E7 |put
+| E7 |patch
 | E8 |patch
 | E9 |get
 | E10|get
