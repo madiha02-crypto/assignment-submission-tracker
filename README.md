@@ -1,11 +1,11 @@
 # assignment-submission-tracker
 
 
-assignment-submission-tracker
+Assignement - submiision-Tracker
 
  Partner 1 | Partner 2 | Partner 3 |Project | Branch |
 |---|---|---|---|---|
-  sanika | shahibha | madiha | [assignment-submission-tracker] | https://github.com/madiha02-crypto/assignment-submission-tracker |
+| 13   |   sanika | shahibha | madiha | [Campus Event Registration](https://github.com/nithyasatish28/js-mini-project/blob/main/22-campus-event-registration.md) | `team-13-assignment-submission-tracker` |
 
 
 ## 1. Who is doing what
