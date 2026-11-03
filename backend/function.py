@@ -52,3 +52,7 @@ def get_all_assigments(course:str):
         
     session.close()
     return response
+
+
+
+   
