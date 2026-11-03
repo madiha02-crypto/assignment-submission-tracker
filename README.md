@@ -30,7 +30,7 @@ Fill in the method and path from your PRD's endpoint table. Status: ✅ done · 
 | E4 |patch
 | E5 |delete
 | E6 |post
-| E7 |put
+| E7 |patch
 | E8 |patch
 | E9 |get
 | E10|get
