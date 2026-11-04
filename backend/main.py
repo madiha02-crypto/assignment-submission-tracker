@@ -4,11 +4,7 @@ from datetime import datetime
 import function
 
 app = FastAPI(
-<<<<<<< HEAD
-    title = "Assignment Submission Tracker"
-=======
-    title = "Assignment-Tracker"
->>>>>>> 1ecbbf07de81705ecd2db5ba97e2d1d49af6c33a
+    title = "Assignment-Tracker" 
 )
 
 app.add_middleware(
