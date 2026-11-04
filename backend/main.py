@@ -4,7 +4,7 @@ from datetime import datetime
 from backend import function
 
 app = FastAPI(
-    title = "Election Portal API"
+    title = "Assignment-Tracker"
 )
 
 app.add_middleware(
