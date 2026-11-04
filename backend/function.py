@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy import Integer, String, Column, create_engine, DateTime, ForeignKey, Boolean, Float
-from sqlalchemy.orm import Session, declarative_base
+from sqlalcemy.orm import Session, declarative_base
 from datetime import datetime
 
 DB_PATH="assignments.db"
@@ -35,20 +35,20 @@ class Submission(Base):
 Base.metadata.create_all(engine)
 
 
-def get_all_assignments(course:str):
+def get_all_assignments():
     session = Session(engine)
     
-    assignments = Session.query(assignments).all()
+    assignments = session.query(Assignments).all()
     response = []
-    for assignments in Assignments:
+    for assignment in assignments:
             temp_event= {
-                "id": Assignments.id,
-                "course" :Assignments. course,
-                "title": Assignments.title,
-                "max_marks":Assignments.  max_marks,
-                " due_at": Assignments. due_at,
-                "late_until":Assignments.late_until,
-                "created_on":Assignments.  created_on
+                "id": assignment.id,
+                "course" :assignment. course,
+                "title": assignment.title,
+                "max_marks":assignment.  max_marks,
+                " due_at": assignment. due_at,
+                "late_until":assignment.late_until,
+                "created_on":assignment.  created_on
             }
             response.append(temp_event)
             
@@ -132,3 +132,4 @@ def update_assigments_deadline(assignments_id: int, new_due_at: datetime, new_la
         session.delete(assignments)
     session.commit
     session.close
+    return

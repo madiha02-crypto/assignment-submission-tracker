@@ -14,8 +14,8 @@ app.add_middleware(
     allow_headers = ["*"],
 )
 @app.get("/assignments")
-def get_all_assignments(course_id: int): 
-    return function.get_all_assignments(course_id=course_id)
+def get_all_assignments(): 
+    return function.get_all_assignments()
 
 @app.get("/assignments/{assignment_id}")
 def get_assignment(assignment_id: int):
