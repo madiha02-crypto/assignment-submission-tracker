@@ -1,83 +1,107 @@
-from ctypes import alignment
-
-from fastapi import HTTPException
 from sqlalchemy import Integer, String, Column, create_engine, DateTime, ForeignKey, Boolean, Float
 from sqlalchemy.orm import Session, declarative_base
 from datetime import datetime
 
-DB_PATH="assignments.db"
+DB_PATH = "assignments.db"
 engine = create_engine(f"sqlite:///{DB_PATH}")
 Base = declarative_base()
 
-class Assigments (Base):
-    __tablename__ = "assigments"
-    id = Column(Integer, primary_key=True )
+
+class Assignments(Base):
+    __tablename__ = "assignments"
+
+    id = Column(Integer, primary_key=True)
     course = Column(String)
     title = Column(String)
     max_marks = Column(Integer)
     due_at = Column(DateTime, default=datetime.now)
-    late_until = Column(DateTime, default=datetime.now)
+    late_until = Column(String)
     created_on = Column(DateTime, default=datetime.now)
-  
- 
-     
+
+
 class Submission(Base):
     __tablename__ = "submissions"
 
     id = Column(Integer, primary_key=True)
-    assigments_id = Column(Integer, ForeignKey("assigments.id"))
+    assignments_id = Column(Integer, ForeignKey("assignments.id"))
     roll_no = Column(Integer)
-    link = Column(String  )
-    submitted_at = Column(DateTime,nullable=True )  
+    link = Column(String)
+    submitted_at = Column(DateTime, nullable=True)
     is_late = Column(Boolean, default=False)
-    marks = Column(Float,nullable=True)  
-    feedback =Column(String)
+    marks = Column(Float, nullable=True)
+    feedback = Column(String)
     status = Column(Boolean)
+
 
 Base.metadata.create_all(engine)
 
-def get_all_assignments():
-        session = Session(engine)
-        asssigments = session.query(assigments).all()
-    
-        response = []
-        for assigments in asssigments:
-            Submission.assignment_id == asssigments.id + 1
-            current_time = datetime.now()
 
-        if current_time < asssigments.due_at:
-                say = "open"
-        elif current_time <= assigments.late_until:
-                say = "late"             
+# E1
+def get_all_assignments(course=None):
+
+    session = Session(engine)
+
+    assignments = session.query(Assignments).all()
+
+    response = []
+
+    for assignment in assignments:
+
+        if course is not None and assignment.course != course:
+            continue
+
+        current_time = datetime.now()
+
+        if current_time < assignment.due_at:
+            say = "open"
+        elif current_time.strftime("%Y-%m-%d") <= assignment.late_until:
+            say = "late"
         else:
-                say = "closed"
-        temp_event= {
-                "id": assigments.id,
-                "course" :assigments. course,
-                "title": assigments.title,
-                "max_marks":assigments.  max_marks,
-                " due_at": assigments. due_at,
-                "late_until":assigments.late_until,
-                "created_on":assigments.  created_on
-            }
+            say = "closed"
+
+        submission_count = session.query(Submission).filter(
+            Submission.assignments_id == assignment.id
+        ).count()
+
+        temp_event = {
+            "id": assignment.id,
+            "course": assignment.course,
+            "title": assignment.title,
+            "max_marks": assignment.max_marks,
+            "due_at": assignment.due_at,
+            "late_until": assignment.late_until,
+            "created_on": assignment.created_on,
+            "submission_count": submission_count,
+            "status": say
+        }
+
         response.append(temp_event)
-            
-        session.close()
-        return response
 
-def get_assignments( assignments_id:int):
-    session= Session(engine)
-    assigments= session.get( assigments, assignments_id)
-    if not assigments:
-        session.close()
-        raise HTTPException(
-            status_code=404,
-            detail="Assignment not found"
+    session.close()
 
-        )
-           
-        for submission in submissions:{
-        
+    return response
+
+
+# E2
+def get_assignments(assignments_id: int):
+
+    session = Session(engine)
+
+    assignment = session.get(Assignments, assignments_id)
+
+    if not assignment:
+        session.close()
+        return None
+
+    submissions = session.query(Submission).filter(
+        Submission.assignments_id == assignments_id
+    ).all()
+
+    submission_response = []
+
+    for submission in submissions:
+
+        temp_submission = {
             "id": submission.id,
             "roll_no": submission.roll_no,
             "link": submission.link,
@@ -85,60 +109,64 @@ def get_assignments( assignments_id:int):
             "is_late": submission.is_late,
             "marks": submission.marks,
             "feedback": submission.feedback,
-            "status": submission.status }
-        
+            "status": submission.status
+        }
 
-        
-    response = {   "id": assigments.id,
-                "course" :assigments. course,
-                "title": assigments.title,
-                "max_marks":assigments.  max_marks,
-                " due_at": assigments. due_at,
-                "late_until":assigments.late_until,
-                "created_on":assigments.  created_on
-            }
-    
-    session.close() 
-    return response
-
-def add_new_assignments(course:str ,title: str, max_marks:int, due_at:datetime,late_until: datetime ):
-
-    session = Session(engine)
-    new_assigments =Assigments(
-    course=course,
-    title=title,
-    max_marks=max_marks,
-    due_at=due_at,
-    late_until=late_until
-
-    )
-       
-    session.add(new_assigments)
-    session.commit()
-    session.refresh(Assigments)
+        submission_response.append(temp_submission)
 
     response = {
-                 "id": Assigments.id,
-                 "course" :Assigments. course,
-                 "title": Assigments.title,
-                 "max_marks":Assigments.  max_marks,
-                 " due_at": Assigments. due_at,
-                 "late_until":Assigments.late_until,
-                 "created_on":Assigments.  created_on
-             }
+        "id": assignment.id,
+        "course": assignment.course,
+        "title": assignment.title,
+        "max_marks": assignment.max_marks,
+        "due_at": assignment.due_at,
+        "late_until": assignment.late_until,
+        "created_on": assignment.created_on,
+        "submissions": submission_response
+    }
 
     session.close()
+
     return response
 
 
-
-
-
-def update_assigments_deadline(assignments_id: int, new_due_at: datetime, new_late_until: datetime):
+# E3
+def add_new_assignments(course: str, title: str, max_marks: int, late_until: str):
 
     session = Session(engine)
 
-    assignment = session.get(Assigments, assignments_id)
+    new_assignment = Assignments(
+        course=course,
+        title=title,
+        max_marks=max_marks,
+        late_until=late_until
+    )
+
+    session.add(new_assignment)
+
+    session.commit()
+
+    response = {
+        "id": new_assignment.id,
+        "course": new_assignment.course,
+        "title": new_assignment.title,
+        "max_marks": new_assignment.max_marks,
+        "due_at": new_assignment.due_at,
+        "late_until": new_assignment.late_until,
+        "created_on": new_assignment.created_on
+    }
+
+    session.close()
+
+    return response
+
+
+# E4
+def update_assignments_deadline(assignments_id: int, new_due_at: datetime, new_late_until: str):
+
+    session = Session(engine)
+
+    assignment = session.get(Assignments, assignments_id)
 
     if assignment is None:
         session.close()
@@ -148,7 +176,6 @@ def update_assigments_deadline(assignments_id: int, new_due_at: datetime, new_la
     assignment.late_until = new_late_until
 
     session.commit()
-    session.refresh(assignment)
 
     response = {
         "id": assignment.id,
@@ -157,16 +184,69 @@ def update_assigments_deadline(assignments_id: int, new_due_at: datetime, new_la
     }
 
     session.close()
+
     return response
-       
 
-    
-def delete_assigments(assigments_id):
- session = Session(engine)  
- Assigments = session.get(Assigments,assigments_id)
 
- if Assigments:
-    session.delete(Assigments)
-    session.commit
-    session.close
+# E5
+def delete_assignments(assignments_id: int):
 
+    session = Session(engine)
+
+    assignment = session.get(Assignments, assignments_id)
+
+    if assignment:
+
+        session.delete(assignment)
+        session.commit()
+        session.close()
+
+        return {"message": "Assignment deleted successfully"}
+
+    session.close()
+
+    return None
+
+# E6
+def submit_work(assignments_id: int, roll_no: int, link: str):
+
+    session = Session(engine)
+
+    assignment = session.get(Assignments, assignments_id)
+
+    if not assignment:
+        session.close()
+        return None
+
+    current_time = datetime.now()
+
+    if current_time > assignment.due_at:
+        say = True
+    else:
+        say = False
+
+    new_submission = Submission(
+        assignments_id=assignments_id,
+        roll_no=roll_no,
+        link=link,
+        submitted_at=current_time,
+        is_late=say,
+        status=False
+    )
+
+    session.add(new_submission)
+    session.commit()
+
+    response = {
+        "id": new_submission.id,
+        "assignments_id": new_submission.assignments_id,
+        "roll_no": new_submission.roll_no,
+        "link": new_submission.link,
+        "submitted_at": new_submission.submitted_at,
+        "is_late": new_submission.is_late,
+        "status": new_submission.status
+    }
+
+    session.close()
+
+    return response
