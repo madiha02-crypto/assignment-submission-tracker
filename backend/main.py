@@ -43,7 +43,7 @@ def delete_assignment(assignment_id: int):
 @app.post("/assignments/{assignment_id}/submissions")
 def submit_work(
     assignment_id: int,
-    roll_number: str,
+    roll_number: int,
     link: str,
 ):
     return function.submit_work(
@@ -55,7 +55,7 @@ def submit_work(
 @app.patch("/assignments/{assignment_id}/submissions")
 def resubmit_work(
     assignment_id: int,
-    roll_number: str,
+    roll_number: int,
     link: str
 ):
     return function.resubmit_work(
@@ -68,7 +68,7 @@ def resubmit_work(
 def grade_submission(
     submission_id: int,
     marks: float,
-    feedback: str
+    feedback: str,
 ):
     return function.grade_submission(
         submission_id=submission_id,

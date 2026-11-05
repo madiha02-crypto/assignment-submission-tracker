@@ -130,5 +130,7 @@ def update_assigments_deadline(assignments_id: int, new_due_at: datetime, new_la
     if events:
         
         session.delete(assignments)
-    session.commit
-    session.close
+        session.commit
+        session.close 
+
+    
