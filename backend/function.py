@@ -1,15 +1,13 @@
-from ctypes import alignment
-
 from fastapi import HTTPException
 from sqlalchemy import Integer, String, Column, create_engine, DateTime, ForeignKey, Boolean, Float
-from sqlalcemy.orm import Session, declarative_base
+from sqlalchemy.orm import Session, declarative_base
 from datetime import datetime
 
 DB_PATH="assignments.db"
 engine = create_engine(f"sqlite:///{DB_PATH}")
 Base = declarative_base()
 
-class assigments (Base):
+class Assigments (Base):
     __tablename__ = "assigments"
     id = Column(Integer, primary_key=True )
     course = Column(String)
@@ -25,7 +23,7 @@ class Submission(Base):
     __tablename__ = "submissions"
 
     id = Column(Integer, primary_key=True)
-    assigmentss_id = Column(Integer, ForeignKey("assigments.id"))
+    assigments_id = Column(Integer, ForeignKey("assigments.id"))
     roll_no = Column(Integer)
     link = Column(String  )
     submitted_at = Column(DateTime,nullable=True )  
@@ -42,12 +40,8 @@ def get_all_assignments():
     
         response = []
         for assigments in asssigments:
-            Submission.assignment_id == asssigments.id #add 1
+            Submission.assignment_id == asssigments.id + 1
             current_time = datetime.now()
-
-
-        class assignment:
-             ...
 
         if current_time < assignment.due_at:
                 say = "open"
@@ -142,7 +136,7 @@ def update_assigments_deadline(assignments_id: int, new_due_at: datetime, new_la
 
     session = Session(engine)
 
-    assignment = session.get(assigments, assignments_id)
+    assignment = session.get(Assigments, assignments_id)
 
     if assignment is None:
         session.close()
@@ -180,8 +174,7 @@ def add_submission(assignment_id, roll_no, link,):
 
     submitted_at = datetime.now()
 
-    class assignment:
-         ...
+   
 
     is_late = submitted_at > assignment.due_at
 
