@@ -1,81 +1,107 @@
-from fastapi import HTTPException
 from sqlalchemy import Integer, String, Column, create_engine, DateTime, ForeignKey, Boolean, Float
 from sqlalchemy.orm import Session, declarative_base
 from datetime import datetime
 
-DB_PATH="assignments.db"
+DB_PATH = "assignments.db"
 engine = create_engine(f"sqlite:///{DB_PATH}")
 Base = declarative_base()
 
-class Assigments (Base):
-    __tablename__ = "assigments"
-    id = Column(Integer, primary_key=True )
+
+class Assignments(Base):
+    __tablename__ = "assignments"
+
+    id = Column(Integer, primary_key=True)
     course = Column(String)
     title = Column(String)
     max_marks = Column(Integer)
     due_at = Column(DateTime, default=datetime.now)
-    late_until = Column(DateTime, default=datetime.now)
+    late_until = Column(String)
     created_on = Column(DateTime, default=datetime.now)
-  
- 
-     
+
+
 class Submission(Base):
     __tablename__ = "submissions"
 
     id = Column(Integer, primary_key=True)
-    assigments_id = Column(Integer, ForeignKey("assigments.id"))
+    assignments_id = Column(Integer, ForeignKey("assignments.id"))
     roll_no = Column(Integer)
-    link = Column(String  )
-    submitted_at = Column(DateTime,nullable=True )  
+    link = Column(String)
+    submitted_at = Column(DateTime, nullable=True)
     is_late = Column(Boolean, default=False)
-    marks = Column(Float,nullable=True)  
-    feedback =Column(String)
+    marks = Column(Float, nullable=True)
+    feedback = Column(String)
     status = Column(Boolean)
+
 
 Base.metadata.create_all(engine)
 
-def get_all_assignments():
-        session = Session(engine)
-        asssigments = session.query(assigments).all()
-    
-        response = []
-        for assigments in asssigments:
-            Submission.assignment_id == asssigments.id + 1
-            current_time = datetime.now()
+
+# E1
+def get_all_assignments(course=None):
+
+    session = Session(engine)
+
+    assignments = session.query(Assignments).all()
+
+    response = []
+
+    for assignment in assignments:
+
+        if course is not None and assignment.course != course:
+            continue
+
+        current_time = datetime.now()
 
         if current_time < assignment.due_at:
-                say = "open"
-        elif current_time <= assignment.late_until:
-                say = "late"             
+            say = "open"
+        elif current_time.strftime("%Y-%m-%d") <= assignment.late_until:
+            say = "late"
         else:
-                say = "closed"
-        temp_event= {
-                "id": assigments.id,
-                "course" :assigments. course,
-                "title": assigments.title,
-                "max_marks":assigments.  max_marks,
-                " due_at": assigments. due_at,
-                "late_until":assigments.late_until,
-                "created_on":assigments.  created_on
-            }
+            say = "closed"
+
+        submission_count = session.query(Submission).filter(
+            Submission.assignments_id == assignment.id
+        ).count()
+
+        temp_event = {
+            "id": assignment.id,
+            "course": assignment.course,
+            "title": assignment.title,
+            "max_marks": assignment.max_marks,
+            "due_at": assignment.due_at,
+            "late_until": assignment.late_until,
+            "created_on": assignment.created_on,
+            "submission_count": submission_count,
+            "status": say
+        }
+
         response.append(temp_event)
-            
-        session.close()
-        return response
 
-def get_assignments( assignments_id:int):
-    session= Session(engine)
-    assigments= session.get( assigments, assignments_id)
-    if not assigments:
-        session.close()
-        raise HTTPException(
-            status_code=404,
-            detail="Assignment not found"
+    session.close()
 
-        )
-           
-        for submission in submissions:{
-        
+    return response
+
+
+# E2
+def get_assignments(assignments_id: int):
+
+    session = Session(engine)
+
+    assignment = session.get(Assignments, assignments_id)
+
+    if not assignment:
+        session.close()
+        return None
+
+    submissions = session.query(Submission).filter(
+        Submission.assignments_id == assignments_id
+    ).all()
+
+    submission_response = []
+
+    for submission in submissions:
+
+        temp_submission = {
             "id": submission.id,
             "roll_no": submission.roll_no,
             "link": submission.link,
@@ -83,60 +109,64 @@ def get_assignments( assignments_id:int):
             "is_late": submission.is_late,
             "marks": submission.marks,
             "feedback": submission.feedback,
-            "status": submission.status }
-        
+            "status": submission.status
+        }
 
-        
-    response = {   "id": assigments.id,
-                "course" :assigments. course,
-                "title": assigments.title,
-                "max_marks":assigments.  max_marks,
-                " due_at": assigments. due_at,
-                "late_until":assigments.late_until,
-                "created_on":assigments.  created_on
-            }
-    
-    session.close() 
-    return response
-
-def add_new_assignments(course:str ,title: str, max_marks:int, due_at:datetime,late_until: datetime ):
-
-    session = Session(engine)
-    new_assigments =assigments(
-    course=course,
-    title=title,
-    max_marks=max_marks,
-    due_at=due_at,
-    late_until=late_until
-
-    )
-       
-    session.add(new_assigments)
-    session.commit()
-    session.refresh(assigments)
+        submission_response.append(temp_submission)
 
     response = {
-                 "id": assigments.id,
-                 "course" :assigments. course,
-                 "title": assigments.title,
-                 "max_marks":assigments.  max_marks,
-                 " due_at": assigments. due_at,
-                 "late_until":assigments.late_until,
-                 "created_on":assigments.  created_on
-             }
+        "id": assignment.id,
+        "course": assignment.course,
+        "title": assignment.title,
+        "max_marks": assignment.max_marks,
+        "due_at": assignment.due_at,
+        "late_until": assignment.late_until,
+        "created_on": assignment.created_on,
+        "submissions": submission_response
+    }
 
     session.close()
+
     return response
 
 
-
-
-
-def update_assigments_deadline(assignments_id: int, new_due_at: datetime, new_late_until: datetime):
+# E3
+def add_new_assignments(course: str, title: str, max_marks: int, late_until: str):
 
     session = Session(engine)
 
-    assignment = session.get(Assigments, assignments_id)
+    new_assignment = Assignments(
+        course=course,
+        title=title,
+        max_marks=max_marks,
+        late_until=late_until
+    )
+
+    session.add(new_assignment)
+
+    session.commit()
+
+    response = {
+        "id": new_assignment.id,
+        "course": new_assignment.course,
+        "title": new_assignment.title,
+        "max_marks": new_assignment.max_marks,
+        "due_at": new_assignment.due_at,
+        "late_until": new_assignment.late_until,
+        "created_on": new_assignment.created_on
+    }
+
+    session.close()
+
+    return response
+
+
+# E4
+def update_assignments_deadline(assignments_id: int, new_due_at: datetime, new_late_until: str):
+
+    session = Session(engine)
+
+    assignment = session.get(Assignments, assignments_id)
 
     if assignment is None:
         session.close()
@@ -146,7 +176,6 @@ def update_assigments_deadline(assignments_id: int, new_due_at: datetime, new_la
     assignment.late_until = new_late_until
 
     session.commit()
-    session.refresh(assignment)
 
     response = {
         "id": assignment.id,
@@ -155,164 +184,233 @@ def update_assigments_deadline(assignments_id: int, new_due_at: datetime, new_la
     }
 
     session.close()
+
     return response
-       
 
-    
-def delete_assigments(assigments_id):
- session = Session(engine)  
- events = session.get(assigments,assigments_id)
 
- if events:
-    session.delete(assigments)
-    session.commit
-    session.close
+# E5
+def delete_assignments(assignments_id: int):
 
-def add_submission(assignment_id, roll_no, link,):
+    session = Session(engine)
 
-    session = Session(engine) 
+    assignment = session.get(Assignments, assignments_id)
 
-    submitted_at = datetime.now()
+    if assignment:
 
-   
+        session.delete(assignment)
+        session.commit()
+        session.close()
 
-    is_late = submitted_at > assignment.due_at
+        return {"message": "Assignment deleted successfully"}
 
-    new_submission = Submission(assignment_id=assignment_id,roll_no=roll_no,link=link,submitted_at=submitted_at,is_late=is_late)
+    session.close()
+
+    return None
+
+
+#E6
+
+def submit_work(assignments_id: int, roll_no: int, link: str):
+
+    session = Session(engine)
+
+    assignment = session.get(Assignments, assignments_id)
+
+    if not assignment:
+        session.close()
+        return None
+
+    current_time = datetime.now()
+
+    if current_time > assignment.due_at:
+        say = True
+    else:
+        say = False
+
+    new_submission = Submission(
+        assignments_id=assignments_id,
+        roll_no=roll_no,
+        link=link,
+        submitted_at=current_time,
+        is_late=say,
+        status=False
+    )
 
     session.add(new_submission)
     session.commit()
 
     response = {
         "id": new_submission.id,
+        "assignments_id": new_submission.assignments_id,
         "roll_no": new_submission.roll_no,
         "link": new_submission.link,
         "submitted_at": new_submission.submitted_at,
-        "is_late": new_submission.is_late
+        "is_late": new_submission.is_late,
+        "status": new_submission.status
     }
 
     session.close()
-    return response 
 
-# EC9
-def get_student_submission(roll_no):
+    return response
+
+#E7
+def resubmit_work(assignments_id: int, roll_no: int, new_link: str):
 
     session = Session(engine)
 
-    submissions = session.query(Submission).filter(Submission.roll_no == roll_no).all()
+    submissions = session.query(Submission).filter(Submission.assignments_id == assignments_id).all()
 
-    if not submissions:
+    submission = None
+
+    for temp in submissions:
+        if temp.roll_no == roll_no:
+            submission = temp
+            break
+
+    if submission is None:
         session.close()
         return None
 
-    assignment = session.query(assignment).filter(assignment.id == Submission.assignments_id).first()
+    assignment = session.get(Assignments, assignments_id)
+
+    if not assignment:
+        session.close()
+        return None
+
+    current_time = datetime.now()
+
+    if current_time > assignment.due_at:
+        say = True
+    else:
+        say = False
+
+    submission.link = new_link
+    submission.submitted_at = current_time
+    submission.is_late = say
+
+    session.commit()
 
     response = {
-        "id": Submission.id,
-        "roll_no": Submission.roll_no,
-        "title": assignment.title,
-        "marks": Submission.marks,
-        "max_marks": assignment.max_marks,
-        "feedback": Submission.feedback
+        "id": submission.id,
+        "assignments_id": submission.assignments_id,
+        "roll_no": submission.roll_no,
+        "link": submission.link,
+        "submitted_at": submission.submitted_at,
+        "is_late": submission.is_late
     }
-
-    session.close()   
-    return response
-
-
-# EC10
-def get_assignment_report(assignment_id):
-    session = Session(engine)
-
-    assignment = session.query(assignment).filter(assignment.id == assignment_id).first()
-
-    if assignment is None:
-        session.close()
-        return {"message": "Assignment not found"}
-
-    submissions = session.query(Submission).filter(Submission.assignments_id == assignment_id).all()
-
-    number_submitted = len(submissions)
-
-    number_late = sum(1 for submission in submissions if submissions.is_late)
-
-    number_graded = sum(1 for submission in submissions if submissions.marks is not None)
-
-    if number_graded > 0:
-        average_marks = sum(submissions.marks for submission in submissions if submissions.marks is not None) / number_graded
-    else:
-        average_marks = 0
 
     session.close()
 
-    return {
-        "number_submitted": number_submitted,
-        "number_late": number_late,
-        "number_graded": number_graded,
-        "average_marks": average_marks
-    }
+    return response
 
-  
-def get_student_submissions(roll_no):
+#E8
+def grade_submission(submission_id: int, marks: float, feedback: str):
 
     session = Session(engine)
 
-    student = session.query(student).filter(student.roll_no == roll_no).first()
+    submission = session.get(Submission, submission_id)
 
-    if student is None:
+    if not submission:
         session.close()
-        return {"message": "Student not found"}
+        return None
+
+    submission.marks = marks
+    submission.feedback = feedback
+    submission.status = True
+
+    session.commit()
+
+    response = {
+        "id": submission.id,
+        "roll_no": submission.roll_no,
+        "marks": submission.marks,
+        "feedback": submission.feedback,
+        "status": submission.status
+    }
+
+    session.close()
+
+    return response
+
+#E9
+
+def get_student_submissions(roll_no: int):
+
+    session = Session(engine)
 
     submissions = session.query(Submission).filter(Submission.roll_no == roll_no).all()
-
-    if not submissions:
-        session.close()
-        return {"message": "No submissions found"}
 
     response = []
 
     for submission in submissions:
 
-        assignment = session.query(assignment).filter(assignment.id == submission.assignments_id).first()
+        assignment = session.get(Assignments,submission.assignments_id)
 
         if assignment:
-            result = {
+
+            temp_event = {
+                "assignment_id": assignment.id,
                 "title": assignment.title,
-                "marks": submission.marks,
+                "marks": assignment.max_marks,
                 "final_marks": submission.marks,
                 "feedback": submission.feedback
             }
 
-            response.append(result)
+            response.append(temp_event)
 
     session.close()
+
     return response
 
+#E10
 
-# EC8
+def get_assignment_report(assignments_id: int):
 
-def grade_submission(submission_id: int, marks: float, feedback: str):
+    session = Session(engine)
 
-        session = Session(engine)
+    assignment = session.get(Assignments, assignments_id)
 
-        submission = session.get(Submission, submission_id)
+    if not assignment:
+        session.close()
+        return None
 
-        if submission is None:
-            return None
+    submissions = session.query(Submission).filter(Submission.assignments_id == assignments_id).all()
 
-        submission.marks = marks
-        submission.feedback = feedback
-        submission.status = True
+    submitted = 0
+    late = 0
+    graded = 0
+    total_marks = 0
 
-        session.commit()
-        session.refresh(submission)
+    for submission in submissions:
 
-        return {
-            "id": submission.id,
-            "marks": submission.marks,
-            "feedback": submission.feedback,
-            "status": submission.status
-        }
+        submitted += 1
+
+        if submission.is_late:
+            late += 1
+
+        if submission.status:
+            graded += 1
+
+            if submission.marks is not None:
+                total_marks += submission.marks
+
+    if graded > 0:
+        average_marks = total_marks / graded
+    else:
+        average_marks = 0
+
+    response = {
+        "assignment_id": assignment.id,
+        "title": assignment.title,
+        "number_submitted": submitted,
+        "number_late": late,
+        "number_graded": graded,
+        "average_final_marks": average_marks
+    }
+
+    session.close()
+
+    return response
     
 
 
