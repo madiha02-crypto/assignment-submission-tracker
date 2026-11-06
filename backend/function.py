@@ -36,50 +36,6 @@ class Submission(Base):
 Base.metadata.create_all(engine)
 
 
-# E1
-def get_all_assignments(course=None):
-
-    session = Session(engine)
-
-    assignments = session.query(Assignments).all()
-
-    response = []
-
-    for assignment in assignments:
-
-        if course is not None and assignment.course != course:
-            continue
-
-        current_time = datetime.now()
-
-        if current_time < assignment.due_at:
-            say = "open"
-        elif current_time.strftime("%Y-%m-%d") <= assignment.late_until:
-            say = "late"
-        else:
-            say = "closed"
-
-        submission_count = session.query(Submission).filter(
-            Submission.assignments_id == assignment.id
-        ).count()
-
-        temp_event = {
-            "id": assignment.id,
-            "course": assignment.course,
-            "title": assignment.title,
-            "max_marks": assignment.max_marks,
-            "due_at": assignment.due_at,
-            "late_until": assignment.late_until,
-            "created_on": assignment.created_on,
-            "submission_count": submission_count,
-            "status": say
-        }
-
-        response.append(temp_event)
-
-    session.close()
-
-    return response
 
 
 def resubmit_work(assignments_id: int, roll_no: int, new_link: str):
