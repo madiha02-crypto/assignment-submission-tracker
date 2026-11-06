@@ -6,7 +6,7 @@ import function
 
 
 app = FastAPI(
-    title = "Assignment-Tracker"
+    title = "Assignment Submission Tracker"
 )
 
 
