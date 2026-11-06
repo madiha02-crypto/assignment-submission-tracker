@@ -206,4 +206,3 @@ def delete_assignments(assignments_id: int):
     session.close()
 
     return None
-

@@ -76,18 +76,23 @@ def delete_assignment(assignment_id: int):
 
     return response
 
+
+
+
 # sanika functions api
-app.post("/assignments/{assignment_id}/submissions")
-def submit_work(
-    assignment_id: int,
-    roll_number: str,
-    link: str,
-):
-    return function.submit_work(
-        assignment_id=assignment_id,
-        roll_number=roll_number,
+@app.post("/assignments/{assignment_id}/submissions")
+def submit_work(assignment_id: int, roll_number: int, link: str):
+
+    response = function.submit_work(
+        assignments_id=assignment_id,
+        roll_no=roll_number,
         link=link
     )
+
+    if response is None:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+
+    return response
 
 @app.patch("/assignments/{assignment_id}/submissions")
 def resubmit_work(
