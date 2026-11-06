@@ -6,7 +6,7 @@ import function
 
 
 app = FastAPI(
-    title="Assignment-Tracker"
+    title = "Assignment-Tracker"
 )
 
 
@@ -16,7 +16,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # E1
 @app.get("/assignments")
@@ -39,7 +38,8 @@ def get_assignment(assignment_id: int):
 
 # E3
 @app.post("/assignments")
-def create_assignment(course: str, title: str, max_marks: int, late_until: str):
+def create_assignment(assignment: int):
+    return function.create_assignment(assignment)
 
     return function.add_new_assignments(
         course=course,

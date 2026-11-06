@@ -1,40 +1,89 @@
-# ---------- Frontend (React + Vite) ----------
+# ==================================
+# Node.js / React / Vite
+# ==================================
+
 node_modules/
 dist/
+dist-ssr/
 .vite/
 *.local
 
-# ---------- Backend (Python + FastAPI) ----------
-.venv/
-venv/
-env/
-__pycache__/
-*.pyc
-.pytest_cache/
-
-# ---------- Secrets: never push these ----------
-.env
-.env.*
-!.env.example
-
-# ---------- Logs ----------
+# Logs
+logs/
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# ---------- Editor and OS files ----------
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
-# Python cache
+# ==================================
+# Python
+# ==================================
+
+# Python cache files
 __pycache__/
 *.py[cod]
-
-# Local databases
-*.db
-*.sqlite
-*.sqlite3
+*$py.class
 
 # Virtual environments
 venv/
 .venv/
+env/
+ENV/
+
+# Python testing and coverage
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Python build files
+build/
+*.egg-info/
+.installed.cfg
+
+# ==================================
+# Local databases
+# ==================================
+
+*.db
+*.sqlite
+*.sqlite3
+
+# SQLite temporary files
+*.db-wal
+*.db-shm
+*.db-journal
+
+# ==================================
+# Environment variables / secrets
+# ==================================
+
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# ==================================
+# Editor directories and files
+# ==================================
+
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ==================================
+# Operating system files
+# ==================================
+
+.DS_Store
+Thumbs.db
+desktop.ini
