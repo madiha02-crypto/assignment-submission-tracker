@@ -5,7 +5,7 @@ Assignement - submiision-Tracker
 
  Partner 1 | Partner 2 | Partner 3 |Project | Branch |
 |---|---|---|---|---|
-   sanika | shahibha | madiha | [assignment-submission-tracker](https://github.com/nithyasatish28/js-mini-project/blob/main/22-campus-event-registration.md) | `team-13-assignment-submission-tracker` |
+   sanika | shahibha | madiha | [assignment-submission-tracker] (https://github.com/madiha02-crypto/assignment-submission-tracker) | `team-13-assignment-submission-tracker` |
 
 
 ## 1. Who is doing what
@@ -14,9 +14,16 @@ Update your own row at every check-in.
 
 | Day | Partner | What will you do? | Completed? | What are you going to work on next? | Stuck on? |
 |---|---|---|---|---|---|
-| Day 1 | sanika| E6,E7,E8,E9,E10 |  |  function.py |  |
-| Day 1 | shahibha | E1,E2,E3,E4,E5 |  | function.py |  |
-| Day 1 | madiha| main.py  |  | Write main.py |  |
+| Day 1 | sanika| E6,E7,E8,E9,E10 | no |  function.py | yes |
+| Day 1 | shahibha | E1,E2,E3,E4,E5 | yes | function.py | no |
+| Day 1 | madiha| main.py  |yes| Write main.py | no |
+| Day 2 | sanika| E6,E7,E8,E9,E10 |  yes | test function.py | no |
+| Day 2 | shahibha |add components and try to solve the bugs|yes   | try doing  write app.jsx | yes |
+| Day 2 | madiha| main.py  and solve the bug | yes | Write main.py |  no|
+| Day 3 | sanika|   test backend and fix the error  |frontend my_work   | no |
+| Day 3 | shahibha| test backend and fix the error | yes | frontened assignments | no |
+| Day 3 | madiha| teacher components |no | still stuck on it  | yes|
+
 |
 ## 2. Endpoint tracker
 
