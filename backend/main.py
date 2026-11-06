@@ -22,7 +22,7 @@ def get_assignment(assignment_id: int):
     return function.get_assignment(assignment_id=assignment_id)
 
 @app.post("/assignments")
-def create_assignment(assignment: dict):
+def create_assignment(assignment: int):
     return function.create_assignment(assignment)
 
 @app.patch("/assignments/{assignment_id}/deadline")
