@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
-from backend import function
+import function
 
 app = FastAPI(
-    title = "Election Portal API"
+    title = "Assignment-Tracker"
 )
 
 app.add_middleware(
@@ -14,7 +14,7 @@ app.add_middleware(
     allow_headers = ["*"],
 )
 @app.get("/assignments")
-def get_all_assignments(course_id: int):
+def get_all_assignments(course_id: int): 
     return function.get_all_assignments(course_id=course_id)
 
 @app.get("/assignments/{assignment_id}")
