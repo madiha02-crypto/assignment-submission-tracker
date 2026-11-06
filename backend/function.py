@@ -37,6 +37,43 @@ Base.metadata.create_all(engine)
 
 
 
+def submit_work(assignments_id: int, roll_no: int, link: str):
+
+    session = Session(engine)
+
+    assignment = session.get(Assignments, assignments_id)
+
+    if not assignment:
+        session.close()
+        return None
+
+    current_time = datetime.now()
+
+    new_submission = Submission(
+        assignments_id=assignments_id,
+        roll_no=roll_no,
+        link=link,
+        submitted_at=current_time,
+        is_late=current_time > assignment.due_at,
+        status=False
+    )
+
+    session.add(new_submission)
+    session.commit()
+
+    response = {
+        "id": new_submission.id,
+        "assignments_id": new_submission.assignments_id,
+        "roll_no": new_submission.roll_no,
+        "link": new_submission.link,
+        "submitted_at": new_submission.submitted_at,
+        "is_late": new_submission.is_late,
+        "status": new_submission.status
+    }
+
+    session.close()
+
+    return response
 
 def resubmit_work(assignments_id: int, roll_no: int, new_link: str):
 
@@ -63,14 +100,9 @@ def resubmit_work(assignments_id: int, roll_no: int, new_link: str):
 
     current_time = datetime.now()
 
-    if current_time > assignment.due_at:
-        say = True
-    else:
-        say = False
-
     submission.link = new_link
     submission.submitted_at = current_time
-    submission.is_late = say
+    submission.is_late = current_time > assignment.due_at
 
     session.commit()
 
