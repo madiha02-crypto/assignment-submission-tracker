@@ -46,9 +46,7 @@ def resubmit_work(assignments_id: int, roll_no: int, new_link: str):
 
     session = Session(engine)
 
-    submissions = session.query(Submission).filter(
-        Submission.assignments_id == assignments_id
-    ).all()
+    submissions = session.query(Submission).filter(Submission.assignments_id == assignments_id).all()
 
     submission = None
 
@@ -127,18 +125,13 @@ def get_student_submissions(roll_no: int):
 
     session = Session(engine)
 
-    submissions = session.query(Submission).filter(
-        Submission.roll_no == roll_no
-    ).all()
+    submissions = session.query(Submission).filter(Submission.roll_no == roll_no).all()
 
     response = []
 
     for submission in submissions:
 
-        assignment = session.get(
-            Assignments,
-            submission.assignments_id
-        )
+        assignment = session.get(Assignments,submission.assignments_id)
 
         if assignment:
 
@@ -167,9 +160,7 @@ def get_assignment_report(assignments_id: int):
         session.close()
         return None
 
-    submissions = session.query(Submission).filter(
-        Submission.assignments_id == assignments_id
-    ).all()
+    submissions = session.query(Submission).filter(Submission.assignments_id == assignments_id).all()
 
     submitted = 0
     late = 0
