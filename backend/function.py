@@ -1,56 +1,29 @@
-from sqlalchemy import Integer, String, Column, create_engine, DateTime, ForeignKey, Boolean, Float
-from sqlalchemy.orm import Session, declarative_base
-from datetime import datetime
-
-DB_PATH = "assignments.db"
-engine = create_engine(f"sqlite:///{DB_PATH}")
-Base = declarative_base()
-
-
-class Assignments(Base):
-    __tablename__ = "assignments"
-
-    id = Column(Integer, primary_key=True)
-    course = Column(String)
-    title = Column(String)
-    max_marks = Column(Integer)
-    due_at = Column(DateTime, default=datetime.now)
-    late_until = Column(String)
-    created_on = Column(DateTime, default=datetime.now)
-
-
-class Submission(Base):
-    __tablename__ = "submissions"
-
-    id = Column(Integer, primary_key=True)
-    assignments_id = Column(Integer, ForeignKey("assignments.id"))
-    roll_no = Column(Integer)
-    link = Column(String)
-    submitted_at = Column(DateTime, nullable=True)
-    is_late = Column(Boolean, default=False)
-    marks = Column(Float, nullable=True)
-    feedback = Column(String)
-    status = Column(Boolean)
-
-
-Base.metadata.create_all(engine)def submit_work(assignments_id: int, roll_no: int, link: str):
+def submit_work(assignments_id: int, roll_no: int, link: str):
 
     session = Session(engine)
 
-    assignment = session.get(Assignments, assignments_id)
+    assignments = session.query(Assignments).all()
 
-    if not assignment:
-        session.close()
-        return None
+    response = []
 
-    current_time = datetime.now()
+    for assignment in assignments:
+
+        if course is not None and assignment.course != course:
+            continue
+
+        current_time = datetime.now()
+
+    if current_time > assignment.due_at:
+        say = True
+    else:
+        say = False
 
     new_submission = Submission(
         assignments_id=assignments_id,
         roll_no=roll_no,
         link=link,
         submitted_at=current_time,
-        is_late=current_time > assignment.due_at,
+        is_late=say,
         status=False
     )
 
